@@ -1,0 +1,62 @@
+version: '3.5'
+services:
+    config-server:
+        container_name: config-server
+        build:
+            context: ./config-server
+            dockerfile: Dockerfile
+        image: config-server:latest
+        restart: always
+        logging:
+            driver: json-file
+
+    eureka-server:
+        container_name: eureka-server
+        build:
+            context: ./eureka-server
+            dockerfile: Dockerfile
+        image: eureka-server:latest
+        restart: always
+        depends_on:
+            - config-server
+        logging:
+            driver: json-file
+
+    auth-server:
+        container_name: auth-server
+        build:
+            context: ./auth-server
+            dockerfile: Dockerfile
+        image: auth-server:latest
+        restart: always
+        depends_on:
+            - eureka-server
+        logging:
+            driver: json-file
+
+    rest-server:
+        container_name: rest-server
+        build:
+            context: ./rest-server
+            dockerfile: Dockerfile
+        image: rest-server:latest
+        restart: always
+        depends_on:
+            - eureka-server
+        logging:
+            driver: json-file
+
+    zuul-server:
+        container_name: zuul-server
+        build:
+            context: ./zuul-server
+            dockerfile: Dockerfile
+        image: zuul-server:latest
+        restart: always
+        ports:
+            - 8080:8080
+        depends_on:
+            - eureka-server
+        logging:
+            driver: json-file
+
